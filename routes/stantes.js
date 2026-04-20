@@ -38,7 +38,20 @@ router.delete('/:id', async (req, res) => {
         // Ensure user owns the stante before deleting
         const result = await Stante.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
         if (!result) return res.status(404).json({ message: 'Sucursal no encontrada o no tienes permisos' });
-        res.json({ message: 'Stante deleted' });
+
+        const stanteName = result.name;
+        const [Sale, Restock, Product] = [require('../models/Sale'), require('../models/Restock'), require('../models/Product')];
+        
+        // Delete history
+        await Sale.deleteMany({ stante: stanteName, userId: req.user._id });
+        await Restock.deleteMany({ stante: stanteName, userId: req.user._id });
+
+        // Unset product stock
+        const unsetQuery = {};
+        unsetQuery[`stock.${stanteName}`] = "";
+        await Product.updateMany({ userId: req.user._id }, { $unset: unsetQuery });
+
+        res.json({ message: 'Stante and associated data deleted' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
