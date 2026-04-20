@@ -28,13 +28,13 @@ async function fullReset() {
     // 2. Crear Admin Maestro
     const adminUser = new User({
       username: 'admin',
-      password: 'mgnb2024',
+      password: 'mgnb2025',
       role: 'admin',
       status: 'active'
     });
 
     await adminUser.save();
-    console.log('✅ Usuario ADMIN creado exitosamente (admin / mgnb2024).');
+    console.log('✅ Usuario ADMIN creado exitosamente (admin / mgnb2025).');
 
     process.exit(0);
   } catch (err) {
