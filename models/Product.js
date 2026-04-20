@@ -4,6 +4,7 @@ const ProductSchema = new mongoose.Schema({
     name: { type: String, required: true },
     purchasePrice: { type: Number, required: true },
     salesPrice: { type: Number, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     // Stock distributed by "stante" (shelf name/id)
     // Example: { "Shelf A": 10, "Shelf B": 5 }
     stock: {

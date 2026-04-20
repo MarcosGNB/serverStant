@@ -2,11 +2,15 @@ const express = require('express');
 const router = express.Router();
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
+const { auth } = require('../middleware/auth');
+
+// Protect all routes
+router.use(auth);
 
 // GET all sales
 router.get('/', async (req, res) => {
     try {
-        const sales = await Sale.find().populate('product').sort({ createdAt: -1 });
+        const sales = await Sale.find({ userId: req.user._id }).populate('product').sort({ createdAt: -1 });
         res.json(sales);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -18,8 +22,9 @@ router.post('/', async (req, res) => {
     const { productId, quantity, stante } = req.body;
 
     try {
-        const product = await Product.findById(productId);
-        if (!product) return res.status(404).json({ message: 'Product not found' });
+        // Find product ensuring it belongs to the user
+        const product = await Product.findOne({ _id: productId, userId: req.user._id });
+        if (!product) return res.status(404).json({ message: 'Product not found or access denied' });
 
         const currentStock = product.stock.get(stante) || 0;
         if (currentStock < quantity) {
@@ -37,7 +42,8 @@ router.post('/', async (req, res) => {
             stante: stante,
             purchasePrice: product.purchasePrice,
             salesPrice: product.salesPrice,
-            total: product.salesPrice * quantity
+            total: product.salesPrice * quantity,
+            userId: req.user._id
         });
 
         const newSale = await sale.save();

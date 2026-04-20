@@ -21,12 +21,16 @@ mongoose.connect(MONGODB_URI)
     });
 
 // Routes
+const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
 const productRoutes = require('./routes/products');
 const saleRoutes = require('./routes/sales');
 const restockRoutes = require('./routes/restocks');
 const reportRoutes = require('./routes/reports');
 const stanteRoutes = require('./routes/stantes');
 
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/sales', saleRoutes);
 app.use('/api/restocks', restockRoutes);

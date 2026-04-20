@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Sale = require('../models/Sale');
 const Restock = require('../models/Restock');
+const { auth } = require('../middleware/auth');
+
+// Protect all routes
+router.use(auth);
 
 // GET summary report by date range
 router.get('/summary', async (req, res) => {
@@ -13,6 +17,7 @@ router.get('/summary', async (req, res) => {
 
     try {
         const query = {
+            userId: req.user._id,
             createdAt: {
                 $gte: new Date(from),
                 $lte: new Date(to)
@@ -63,8 +68,9 @@ router.get('/summary', async (req, res) => {
 router.get('/stante/:name', async (req, res) => {
     const { name } = req.params;
     try {
-        const sales = await Sale.find({ stante: name }).populate('product').sort({ createdAt: -1 });
-        const restocks = await Restock.find({ stante: name }).populate('product').sort({ createdAt: -1 });
+        const query = { stante: name, userId: req.user._id };
+        const sales = await Sale.find(query).populate('product').sort({ createdAt: -1 });
+        const restocks = await Restock.find(query).populate('product').sort({ createdAt: -1 });
 
         let totalRevenue = 0;
         let totalCost = 0;
