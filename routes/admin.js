@@ -23,12 +23,25 @@ router.get('/users', async (req, res) => {
 // Create a new user (via Admin)
 router.post('/users', async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = new User({ username, password });
+    const { username, password, logoUrl } = req.body;
+    const user = new User({ username, password, logoUrl: logoUrl || null });
     await user.save();
     res.status(201).json({ message: 'Usuario creado con éxito' });
   } catch (err) {
     res.status(400).json({ message: 'Error al crear usuario' });
+  }
+});
+
+// Update user logo
+router.patch('/users/:id/logo', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    user.logoUrl = req.body.logoUrl || null;
+    await user.save();
+    res.json({ message: 'Logo actualizado' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al actualizar logo' });
   }
 });
 

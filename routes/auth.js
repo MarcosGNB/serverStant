@@ -23,7 +23,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'mgnb_vapo_secret', { expiresIn: '30d' });
-    res.json({ token, user: { username, role: user.role, status: user.status } });
+    res.json({ token, user: { username, role: user.role, status: user.status, logoUrl: user.logoUrl || null } });
   } catch (err) {
     res.status(500).json({ message: 'Error en el servidor' });
   }
