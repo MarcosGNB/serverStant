@@ -14,8 +14,11 @@ app.use(express.json());
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://twichtmgnb_db_user:eieaVgY8P4Wr09MC@cluster0.fxf7liv.mongodb.net/?appName=Cluster0';
 
 mongoose.connect(MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB Atlas'))
-    .catch((err) => console.error('Error connecting to MongoDB:', err));
+    .then(() => console.log('✅ Connected to MongoDB Atlas Successfully'))
+    .catch((err) => {
+        console.error('❌ MongoDB Connection Error Details:');
+        console.error(err);
+    });
 
 // Routes
 const productRoutes = require('./routes/products');
